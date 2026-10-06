@@ -1,0 +1,18 @@
+{
+  "project_name": "PLC Conveyor Sorting System",
+  "plc_model": "Siemens S7-1200 / OpenPLC",
+  "scan_time_ms": 10,
+  "simulation_inputs": {
+    "i_Start_PB": "%I0.0",
+    "i_Prox_Sensor": "%I0.1",
+    "i_EStop_Mon": "%I0.2",
+    "i_Stop_PB": "%I0.3",
+    "i_Tall_Sensor": "%I0.4"
+  },
+  "simulation_outputs": {
+    "q_Conv_Motor": "%Q1.0",
+    "q_Reject_Push": "%Q1.1",
+    "q_Warn_Light": "%Q1.2"
+  },
+  "transit_delay_ms": 1500
+}

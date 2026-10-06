@@ -1,0 +1,51 @@
+(* Main PLC Logic Pseudocode / Structured Text *)
+
+// 1. Safety Routine (Evaluated Every Cycle)
+IF NOT(i_EStop_Mon) THEN
+    b_EStop_Fault := TRUE;
+    q_Conv_Motor := FALSE;
+    q_Reject_Push := FALSE;
+    q_Warn_Light := TRUE; // Amber warning beacon active
+    i_State := 4; // Force Fault State
+END_IF;
+
+// 2. Finite State Machine Evaluation
+CASE i_State OF
+    1: // IDLE STATE
+        q_Conv_Motor := FALSE;
+        q_Reject_Push := FALSE;
+        IF i_Start_PB AND NOT(i_Stop_PB) AND i_EStop_Mon AND NOT(b_EStop_Fault) THEN
+            i_State := 2; // Transition to Running
+        END_IF;
+
+    2: // RUNNING STATE
+        q_Conv_Motor := TRUE;
+        IF i_Prox_Sensor AND NOT(b_EStop_Fault) THEN
+            i_State := 3; // Transition to Sorting
+        END_IF;
+
+    3: // SORTING STATE
+        q_Conv_Motor := TRUE;
+        IF i_Tall_Sensor THEN
+            // Trigger 1.5s On-Delay Timer (TON)
+            TON_Pusher(IN := TRUE, PT := T#1500MS);
+            IF TON_Pusher.Q THEN
+                q_Reject_Push := TRUE;
+            END_IF;
+        ELSE
+            TON_Pusher(IN := FALSE);
+            q_Reject_Push := FALSE;
+            i_State := 2; // Return to Running
+        END_IF;
+
+    4: // FAULT STATE
+        q_Conv_Motor := FALSE;
+        q_Reject_Push := FALSE;
+        q_Warn_Light := TRUE;
+        // Requires manual reset switch
+        IF b_Reset_PB AND i_EStop_Mon THEN
+            b_EStop_Fault := FALSE;
+            q_Warn_Light := FALSE;
+            i_State := 1; // Return to Idle
+        END_IF;
+END_CASE;
