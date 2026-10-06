@@ -1,5 +1,7 @@
 # PLC-Based Automated Conveyor Sorting System
 
+**Project Name:** OptiSort PLC (or AutoSort Pro)
+
 An industrial automation and control logic system designed to sort packages on a conveyor line based on size or color while enforcing strict functional safety interlocks.
 
 ---
