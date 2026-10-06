@@ -4,6 +4,14 @@ An industrial automation and control logic system designed to sort packages on a
 
 ---
 
+## Description
+
+This repository contains the complete industrial control architecture for an automated conveyor sorting line built using Programmable Logic Controllers (PLCs). Modern manufacturing and distribution facilities rely on reliable, deterministic control logic to move, categorize, and direct products with high precision.
+
+The system processes incoming packages on a moving belt, evaluates their physical characteristics (such as package height, length, or color signature) using digital sensors, and triggers physical sorting mechanisms (pneumatic pushers) to route products into designated bins. Beyond material handling, the control logic is structured around strict functional safety standards—implementing hardwired and soft safety interlocks, status monitoring, and immediate emergency shutdown routines to protect both human operators and industrial equipment.
+
+---
+
 ## Project Overview
 
 This project focuses on designing and implementing industrial control architecture using Programmable Logic Controller (PLC) programming. Built as part of the **DecodeLabs Industrial Training** program (Batch 2026), the system automates material handling by mapping sensor inputs to pneumatic actuators and motor drivers, controlled via deterministic sequence logic and state machines.
