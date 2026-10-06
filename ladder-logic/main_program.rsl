@@ -1,51 +1,68 @@
-(* Main PLC Logic Pseudocode / Structured Text *)
+PROGRAM MainProgram
+VAR
+    // Inputs (Sensors and Buttons)
+    i_Start_PB    : BOOL; // Start Button (%I0.0)
+    i_Stop_PB     : BOOL; // Stop Button (%I0.3)
+    i_EStop_Mon   : BOOL; // Safety Relay Monitor (%I0.2)
+    i_Prox_Sensor : BOOL; // Box Entry Sensor (%I0.1)
+    i_Tall_Sensor : BOOL; // Height Sensor (%I0.4)
 
-// 1. Safety Routine (Evaluated Every Cycle)
-IF NOT(i_EStop_Mon) THEN
+    // Outputs (Motors and Pushers)
+    q_Conv_Motor  : BOOL; // Conveyor Belt Motor (%Q1.0)
+    q_Reject_Push : BOOL; // Pneumatic Pusher (%Q1.1)
+    q_Warn_Light  : BOOL; // Alarm Light (%Q1.2)
+
+    // Internal Memory & Timers
+    i_State       : INT := 1; // 1=Idle, 2=Running, 3=Sorting, 4=Fault
+    b_EStop_Fault : BOOL := FALSE;
+    TON_Pusher    : TON;      // 1.5-second Timer
+END_VAR
+
+// 1. Emergency Safety Logic
+IF NOT i_EStop_Mon THEN
     b_EStop_Fault := TRUE;
-    q_Conv_Motor := FALSE;
+    q_Conv_Motor  := FALSE;
     q_Reject_Push := FALSE;
-    q_Warn_Light := TRUE; // Amber warning beacon active
-    i_State := 4; // Force Fault State
+    q_Warn_Light  := TRUE;
+    i_State       := 4; // Jump to Fault State
 END_IF;
 
-// 2. Finite State Machine Evaluation
+// 2. Sequential Logic (State Machine)
 CASE i_State OF
-    1: // IDLE STATE
-        q_Conv_Motor := FALSE;
+    1: // IDLE (Waiting to start)
+        q_Conv_Motor  := FALSE;
         q_Reject_Push := FALSE;
-        IF i_Start_PB AND NOT(i_Stop_PB) AND i_EStop_Mon AND NOT(b_EStop_Fault) THEN
-            i_State := 2; // Transition to Running
+        IF i_Start_PB AND NOT i_Stop_PB AND i_EStop_Mon AND NOT b_EStop_Fault THEN
+            i_State := 2; // Move to Running
         END_IF;
 
-    2: // RUNNING STATE
+    2: // RUNNING (Conveyor moving)
         q_Conv_Motor := TRUE;
-        IF i_Prox_Sensor AND NOT(b_EStop_Fault) THEN
-            i_State := 3; // Transition to Sorting
+        IF i_Prox_Sensor AND NOT b_EStop_Fault THEN
+            i_State := 3; // Move to Sorting
         END_IF;
 
-    3: // SORTING STATE
+    3: // SORTING (Checking box height)
         q_Conv_Motor := TRUE;
         IF i_Tall_Sensor THEN
-            // Trigger 1.5s On-Delay Timer (TON)
-            TON_Pusher(IN := TRUE, PT := T#1500MS);
+            TON_Pusher(IN := TRUE, PT := T#1500MS); // Wait 1.5 seconds
             IF TON_Pusher.Q THEN
-                q_Reject_Push := TRUE;
+                q_Reject_Push := TRUE; // Push box into bin
             END_IF;
         ELSE
             TON_Pusher(IN := FALSE);
             q_Reject_Push := FALSE;
-            i_State := 2; // Return to Running
+            i_State       := 2; // Return to Running state
         END_IF;
 
-    4: // FAULT STATE
-        q_Conv_Motor := FALSE;
+    4: // FAULT (Emergency stop triggered)
+        q_Conv_Motor  := FALSE;
         q_Reject_Push := FALSE;
-        q_Warn_Light := TRUE;
-        // Requires manual reset switch
-        IF b_Reset_PB AND i_EStop_Mon THEN
+        q_Warn_Light  := TRUE;
+        IF i_Start_PB AND i_EStop_Mon THEN
             b_EStop_Fault := FALSE;
-            q_Warn_Light := FALSE;
-            i_State := 1; // Return to Idle
+            q_Warn_Light  := FALSE;
+            i_State       := 1; // Reset back to Idle
         END_IF;
 END_CASE;
+END_PROGRAM
