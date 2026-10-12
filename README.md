@@ -6,26 +6,22 @@ An industrial automation and control logic system designed to sort packages on a
 
 ## 📌 Description
 
-This repository contains the complete industrial control architecture for an automated conveyor sorting line built using Programmable Logic Controllers (PLCs). Modern manufacturing and distribution facilities rely on reliable, deterministic control logic to move, categorize, and direct products with high precision.
+This repository contains the complete industrial control architecture for an automated conveyor sorting line built using Programmable Logic Controllers (PLCs)[cite: 2, 3]. Built as part of the **DecodeLabs Industrial Training** program (Batch 2026), the system automates material handling by mapping digital sensor inputs to pneumatic actuators and motor drivers through deterministic sequence logic and state machines[cite: 1, 3].
 
-The system processes incoming packages on a moving belt, evaluates their physical characteristics (such as package height, length, or color signature) using digital sensors, and triggers physical sorting mechanisms (pneumatic pushers) to route products into designated bins. Beyond material handling, the control logic is structured around strict functional safety standards—implementing hardwired and soft safety interlocks, status monitoring, and immediate emergency shutdown routines to protect both human operators and industrial equipment.
+The control system processes incoming packages on a moving belt, evaluates physical characteristics (package size or color signature) using digital sensors, and triggers pneumatic sorting pushers to divert items into designated bins. Beyond basic material handling, the logic implements hardwired and soft safety interlocks, status monitoring, and immediate Emergency Stop (E-Stop) shutdown routines to protect human operators and equipment.
 
 ---
 
-## 🎯 Project Overview
-
-This project focuses on designing and implementing industrial control architecture using Programmable Logic Controller (PLC) programming[cite: 2, 3]. Built as part of the **DecodeLabs Industrial Training** program (Batch 2026), the system automates material handling by mapping sensor inputs to pneumatic actuators and motor drivers, controlled via deterministic sequence logic and state machines[cite: 1, 3].
-
-### 🚀 Core Objectives
-* **📦 Automated Package Sorting:** Detect and sort items on a moving conveyor using physical properties (size/color)[cite: 3].
-* **🛡️ Industrial Safety Implementation:** Incorporate hardwired and software safety interlocks, including immediate Emergency Stop (E-Stop) emergency shutdown logic[cite: 3].
+## 🎯 Core Objectives
+* **📦 Automated Package Sorting:** Detect and sort items on a moving conveyor using physical properties (size/color).
+* **🛡️ Industrial Safety Implementation:** Incorporate hardwired and software safety interlocks, including immediate Emergency Stop (E-Stop) shutdown logic[cite: 3].
 * **🔌 I/O Mapping & Control:** Correctly map digital sensors (inputs) to motors and pneumatic pushers (outputs)[cite: 3].
 
 ---
 
 ## 🛠️ Tech Stack & Core Competencies
 
-* **🎮 Control Hardware / Paradigm:** Programmable Logic Controller (PLC)[cite: 2, 3]
+* **🎮 Control Hardware / Paradigm:** Programmable Logic Controller (PLC) / Rockwell Automation Allen-Bradley Studio 5000 / RSLogix 500[cite: 2, 3]
 * **🧩 Logic Design:** Ladder Logic (IEC 61131-3) / Sequential State Machine Control[cite: 3]
 * **👁️ Sensor Integration:** Photoelectric, Proximity, or Color Sensors[cite: 3]
 * **⚙️ Actuation Systems:** Conveyor Belt Drive Motors, Pneumatic Sorting Pushers[cite: 3]
@@ -35,7 +31,7 @@ This project focuses on designing and implementing industrial control architectu
 
 ## 🗂️ System Architecture & I/O Mapping
 
-### 📊 Input / Output (I/O) Mapping
+### 📊 Input / Output (I/O) Mapping Table
 
 | Address / Tag | Type | Hardware Component | Description |
 | :--- | :--- | :--- | :--- |
@@ -53,37 +49,31 @@ This project focuses on designing and implementing industrial control architectu
 ## ⚙️ Operating Logic & Safety Sequence
 
 1. **🔄 System Initialization:**
-   * All outputs remain de-energized until the system Start button is pressed and safety guards are clear.
+   * All outputs remain de-energized until the system **Start** button (`I:0/0`) is pressed and all safety guard interlocks report clear.
 
 2. **📦 Sequential Sorting Operation:**
-   * **👀 Item Detection:** `PE1` senses an approaching box and engages the main conveyor motor `M1`.
-   * **🏷️ Classification:** As the box passes `PE2`, the sensor determines its parameter (e.g., height threshold or color signature)[cite: 3].
-   * **💥 Actuation:** Logic timers or position sensors fire pneumatic pusher `SOL1` to route the package to the designated chute[cite: 3].
+   * **Item Detection:** `PE1` (`I:0/3`) senses an approaching package and energizes main conveyor motor `M1` (`O:0/0`).
+   * **Classification:** As the package passes `PE2` (`I:0/4`), the sensor evaluates its target physical threshold (height or color)[cite: 3].
+   * **Actuation:** Logic timers or position pulse registers fire pneumatic pusher `SOL1` (`O:0/1`) to route the package to the designated chute[cite: 3].
 
 3. **🛑 Safety Interlock Logic:**
-   * Depressing the **E-Stop (`I:0/2`)** immediately opens the main control relay, de-energizing motor `M1` and all pneumatic outputs instantly to guarantee operator safety[cite: 3].
+   * Depressing **E-Stop (`I:0/2`)** immediately opens the main safety circuit, instantly de-energizing motor `M1` and pneumatic pushers to prevent damage or injury[cite: 3].
 
 ---
 
-## 🔮 Future Enhancements & Scalability Benefits
+## 🚀 How to Run & Simulate
 
-* **🤖 AI Vision Integration:** Upgrade static color/size sensors to edge-computing camera modules (e.g., OpenCV/YOLO) for advanced multi-attribute product defect and barcode detection.
-* **☁️ SCADA & IoT Telemetry:** Connect PLC registers via Modbus TCP/IP or MQTT to an industrial dashboard for real-time throughput metrics, runtime tracking, and remote monitoring.
-* **📊 Predictive Maintenance:** Implement sensor monitoring logic to track actuator cycles and motor thermal signatures, flagging hardware wear before unexpected system downtime occurs.
-* **🔀 Multi-Pusher Expansion:** Extend the ladder logic sequence to support additional sorting lanes and multi-tier sorting rules without requiring total control architecture overhauls.
+Follow these steps to set up the software environment, load the ladder logic files, and execute the conveyor simulation.
+
+### 📋 Prerequisites
+* **PLC Emulator/IDE:** RSLogix 500 / Studio 5000 Logix Designer or OpenPLC Editor.
+* **Simulator (Optional):** LogixPro 500 Simulator / Factory I/O (Conveyor Sorting Scene).
+* **Git:** Required to clone the repository.
 
 ---
 
-## 📁 Repository Structure
-
-```text
-PLC-Conveyor-Sorting-System/
-├── 📂 docs/
-│   ├── 📄 I_O_Wiring_Diagram.pdf
-│   └── 📄 Sequence_of_Operations.md
-├── 📂 ladder-logic/
-│   ├── ⚡ main_program.rsl
-│   └── 🛡️ safety_routine.rsl
-├── 📂 simulation/
-│   └── ⚙️ plc_sim_config.json
-└── 📄 README.md
+### Step 1: Clone the Repository
+Open your terminal or command prompt and run:
+```bash
+git clone [https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git](https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git)
+cd PLC-Conveyor-Sorting-System
