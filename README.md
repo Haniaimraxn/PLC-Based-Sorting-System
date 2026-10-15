@@ -2,7 +2,7 @@
 
 An industrial automation and control logic system designed to sort packages on a conveyor line based on size or color while enforcing strict functional safety interlocks.
 
----
+--- 
 
 ## 📌 Description
 
@@ -77,3 +77,6 @@ Open your terminal or command prompt and run:
 ```bash
 git clone [https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git](https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git)
 cd PLC-Conveyor-Sorting-System
+
+### Step 1: Clone the Repository
+Open your terminal or command prompt and run:
