@@ -75,6 +75,6 @@ Follow these steps to set up the software environment, load the ladder logic fil
 ### Step 1: Clone the Repository
 Open your terminal or command prompt and run:
 ```bash
-git clone [https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git](https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git)
+git clone https://github.com/Haniaimraxn/PLC-Conveyor-Sorting-System.git
 cd PLC-Conveyor-Sorting-System
 
